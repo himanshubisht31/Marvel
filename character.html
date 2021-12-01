@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Details</title>
+    <style>
+      #charData {
+        /* border: 2px solid white; */
+        color: rgb(12, 4, 4);
+        width: 50%;
+        margin: 20px auto;
+        /* min-height: 30vh; */
+        /* display: none; */
+        /* padding: 20px; */
+      }
+
+      #charData>div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 10px auto;
+        background-color: rgb(48, 46, 46);
+        width: 80%;
+        /* height: 8vh; */
+        line-height: 8vh;
+        border-radius: 20px;
+        font-size: 2rem;
+        padding: 1rem;
+        color: white;
+      }
+
+      #charData p {
+        background-color: rgb(48, 46, 46);
+        margin: 10px auto;
+        padding: 2px 6px;
+        width: 60%;
+        text-align: center;
+        border-radius: 1rem;
+        font-weight: bold;
+        letter-spacing: 3px;
+        color: white;
+      }
+      .pack {
+        display: flex ;
+        justify-content: center ;
+        align-items: center ;
+        background: rgb(240, 240, 240) !important;
+        margin: auto;
+        gap: 1rem;
+      }
+      body{
+        background-image: url(wall.jpg);
+        font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="charData"></div>
+  </body>
+</html>
+<script>
+  let charData = document.getElementById("charData");
+
+  const ts = 1;
+  const PUBLIC_KEY = "a13557bf8c8b88acf8dd779725b7fb5c";
+  const hash = "a841a14f4669dfc41905398edbde2e40";
+
+  const character = JSON.parse(sessionStorage.getItem("id"));
+
+  async function appendData(character) {
+    console.log("id", character);
+    let res = await fetch(
+      `https://gateway.marvel.com:443/v1/public/comics/${character}?ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`
+    );
+    let data = await res.json();
+    const { items } = data.data.results[0].creators;
+    const { title } = data.data.results[0];
+
+    let titleDiv = document.createElement("div");
+    titleDiv.innerHTML = title;
+    charData.appendChild(titleDiv);
+
+    items.forEach((element) => {
+      let role = document.createElement("p");
+      let details = document.createElement("p");
+      let pack = document.createElement("p");
+      pack.classList.add("pack");
+      role.innerHTML = element.role;
+      details.innerHTML = element.name;
+      console.log(role);
+      console.log(details);
+      pack.appendChild(role);
+      pack.appendChild(details);
+      charData.appendChild(pack);
+    });
+  }
+  appendData(character);
+</script>

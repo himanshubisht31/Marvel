@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+    <link rel="stylesheet" href="index.css" />
+
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <title>Marvel</title>
+  </head>
+  <body>
+    <div class="container">
+      <video autoplay muted loop id="myVideo">
+        <source src="pexel.mp4" type="video/mp4" />
+      </video>
+      <img
+        src="https://1000logos.net/wp-content/uploads/2017/08/Marvel-emblem-768x421.jpg"
+        alt=""
+      />
+
+      <div class="search">
+        <input type="text" id="inp" placeholder="Search By Name" />
+        <button onclick="videoData()">
+          <span class="material-icons"> search </span>
+        </button>
+      </div>
+       <div id="suggestions"></div>
+    </div>
+
+    
+  </body>
+</html>
+
+<script>
+  // let mainDiv = document.getElementById("charData");
+  let timer;
+  const PUBLIC_KEY = "a13557bf8c8b88acf8dd779725b7fb5c";
+  const hash = "a841a14f4669dfc41905398edbde2e40";
+  const ts = 1;
+  document.getElementById("inp").addEventListener("input", throttle);
+  let suggestions = document.getElementById("suggestions");
+  function throttle() {
+    if (timer) {
+      return false;
+    }
+
+    timer = setTimeout(() => {
+      main();
+      timer = undefined;
+    }, 500);
+  }
+
+  async function main() {
+    let character = await marvel();
+
+    //  appendData(character);
+  }
+
+  async function marvel() {
+    suggestions.innerHTML = null;
+    var query = document.getElementById("inp").value;
+    if (query.length <= 1) return false;
+
+    let res = await fetch(
+      `https://gateway.marvel.com:443/v1/public/comics?titleStartsWith=${query}&ts=${ts}&apikey=${PUBLIC_KEY}&hash=${hash}`
+    );
+    let data = await res.json();
+    let arr= data.data.results;
+    console.log(arr);
+
+        arr.forEach(({ id, title }) => {
+      let para = document.createElement("p");
+      para.innerHTML = title;
+      para.style.cursor = "pointer";
+      para.addEventListener("click", () => {
+        sessionStorage.setItem('id', JSON.stringify(id))
+        window.location.href = 'character.html';
+      });
+      suggestions.append(para);
+      suggestions.style.display = "block";
+    });
+
+
+  }
+
+
+</script>
